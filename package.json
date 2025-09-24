@@ -1,10 +1,10 @@
 {
   "name": "lambda-muhammara",
-  "version": "4.0.1",
-  "description": "Muhammara 4.0.0 binaries that can be used in Lambda that were built on Node 16.x",
+  "version": "5.3.1",
+  "description": "Muhammara 5.3.1 binaries that can be used in Lambda that were built on Node 20.x on 64-bit (x86) architecture.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CherryCircle/lambda-muhammara.git"
+    "url": "https://github.com/QbDVision-Inc/lambda-muhammara.git"
   },
   "main": "install.js",
   "scripts": {
@@ -19,10 +19,10 @@
   "license": "MIT",
   "dependencies": {
     "extract-zip": "^2.0.1",
-    "muhammara": "^4.0.0"
+    "muhammara": "^5.3.0"
   },
   "engines": {
-    "node": ">= 16.20.0"
+    "node": ">= 20.18.1"
   },
   "overrides": {
     "semver": "7.5.4"
