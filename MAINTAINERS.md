@@ -1,29 +1,60 @@
 # To Create A New Release
 
+Muhammara publishes official pre-built binaries for every release on GitHub, keyed by Node ABI
+version, so building on an EC2 instance is no longer necessary for most releases.
+
 Steps:
-1. Start an EC2 instance and install the **version of node** that you want. For Node 16 we used `ami-033b95fb8079dc481`.
+1. Find the Node ABI version for the Lambda runtime you're targeting at
+   https://nodejs.org/en/download/releases (the `NODE_MODULE_VERSION` column), e.g.:
+   - Node 20.x → `node-v115`
+   - Node 22.x → `node-v127`
+   - Node 24.x → `node-v137`
+2. Download the matching prebuild from the MuhammaraJS release page:
+   ```
+   curl -LO https://github.com/julianhille/MuhammaraJS/releases/download/{muhammara-version}/node-v{ABI}-linux-x64-glibc.tar.gz
+   ```
+   e.g. for muhammara 5.3.0 on Node 22: `.../download/5.3.0/node-v127-linux-x64-glibc.tar.gz`
+3. Extract the binary and zip it up:
+   ```
+   tar xzf node-v{ABI}-linux-x64-glibc.tar.gz   # extracts binding/muhammara.node
+   cd binding/
+   rm muhammara.node.zip                        # remove the old one, if it exists
+   zip muhammara.node.zip muhammara.node
+   rm muhammara.node                            # delete the unzipped version
+   ```
+   (or on Windows using 7zip: `7z a muhammara.node.zip muhammara.node`)
+4. Update package.json with the new version info (and the muhammara dependency version, if it changed)
+5. Sanity check the binary loads on the target runtime using the AWS Lambda base image:
+   ```
+   docker run --rm --platform linux/amd64 --entrypoint bash \
+     -v "$PWD":/pkg public.ecr.aws/lambda/nodejs:22 -c '
+       cd /tmp && npm init -y >/dev/null &&
+       npm install muhammara@5.3.0 /pkg &&
+       cp node_modules/lambda-muhammara/binding/muhammara.node node_modules/muhammara/binding/muhammara.node &&
+       node -e "const m = require(\"muhammara\"); const w = m.createWriter(\"/tmp/out.pdf\"); w.writePage(w.createPage(0,0,595,842)); w.end(); console.log(\"OK on\", process.version);"'
+   ```
+6. Publish it
+    1. `npm publish`
+7. Update the README.md versions, if necessary
+8. Commit and push your changes
+9. Create [a new release on GitHub](https://github.com/QbDVision-Inc/lambda-muhammara/releases/new)
+
+## Fallback: building manually on EC2
+
+Only needed if MuhammaraJS doesn't publish a prebuild for the ABI you need
+(e.g. linux-arm64 glibc is not published).
+
+1. Start an EC2 instance and install the **version of node** that you want.
    1. `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash`
    2. `source ~/.nvm/nvm.sh`
-   3. `nvm install v16` # or whatever version you want
+   3. `nvm install v22` # or whatever version you want
    4. `node -v` # make sure you have the right node version
-   1. `yum install git -y && yum install vi -y`
-   1. `git clone https://github.com/QbDVision-Inc/lambda-muhammara.git`
-   1. `cd lambda-muhammara/`
-   1. `vi package.json` # Update the muhammara version
-   1. `npm install` # Installs muhammara
-   1. `cp node_modules/muhammara/binding/muhammara.node /tmp`
-1. Back at yet another terminal on your local machine, copy the binary created back to your machine
+   5. `yum install git -y && yum install vi -y`
+   6. `git clone https://github.com/QbDVision-Inc/lambda-muhammara.git`
+   7. `cd lambda-muhammara/`
+   8. `vi package.json` # Update the muhammara version
+   9. `npm install` # Installs muhammara
+   10. `cp node_modules/muhammara/binding/muhammara.node /tmp`
+2. Back at yet another terminal on your local machine, copy the binary created back to your machine
     1. `scp ctemp:/tmp/muhammara.node binding/muhammara.node`
-1. Zip it up
-    1. `cd binding/`
-    1. `rm muhammara.node.zip` # Remove the old one, if it exists
-    1. `zip muhammara.node.zip muhammara.node`
-       1. or if on Windows using 7zip: `7z a muhammara.node.zip muhammara.node`
-1. Delete the unzipped version
-    1. `rm muhammara.node`
-1. Update package.json with the new version info
-1. Publish it
-    1. `npm publish`
-1. Update the README.md versions, if necessary
-1. Commit and push your changes
-1. Create [a new release on GitHub](https://github.com/CherryCircle/lambda-muhammara/releases/new)
+3. Continue from step 3 above (zip, verify, publish).
