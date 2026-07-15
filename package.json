@@ -16,7 +16,7 @@
   ],
   "readmeFilename": "README.md",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "muhammara": "6.0.5"
   },
   "devDependencies": {
