@@ -1,7 +1,7 @@
 {
   "name": "lambda-muhammara",
-  "version": "5.3.2",
-  "description": "Muhammara 5.3.0 binaries that can be used in Lambda, built for the Node 22.x (nodejs22.x) runtime on 64-bit (x86) architecture.",
+  "version": "6.0.5",
+  "description": "Muhammara 6.0.5 binaries that can be used in Lambda, built for the Node 22.x (nodejs22.x) runtime on 64-bit (x86) architecture.",
   "repository": {
     "type": "git",
     "url": "https://github.com/QbDVision-Inc/lambda-muhammara.git"
@@ -17,7 +17,7 @@
   "readmeFilename": "README.md",
   "license": "MIT",
   "dependencies": {
-    "muhammara": "5.3.0"
+    "muhammara": "6.0.5"
   },
   "devDependencies": {
     "extract-zip": "^2.0.1"
@@ -27,6 +27,6 @@
     "npm": ">=12.0.0"
   },
   "allowScripts": {
-    "muhammara@5.3.0": true
+    "muhammara@6.0.5": true
   }
 }
