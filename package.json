@@ -7,6 +7,11 @@
     "url": "https://github.com/QbDVision-Inc/lambda-muhammara.git"
   },
   "main": "install.js",
+  "files": [
+    "install.js",
+    "binding/muhammara.node",
+    "binding/muhammara.node.zip"
+  ],
   "scripts": {
     "prepare": "node install.js"
   },
@@ -23,8 +28,14 @@
     "extract-zip": "^2.0.1"
   },
   "engines": {
-    "node": ">= 20.18.1 <23",
-    "npm": ">=12.0.0"
+    "node": ">= 20.18.1 <23"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=12.0.0",
+      "onFail": "error"
+    }
   },
   "allowScripts": {
     "muhammara@6.0.5": true
