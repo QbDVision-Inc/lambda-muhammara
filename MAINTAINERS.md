@@ -13,7 +13,7 @@ Steps:
    ```
    curl -LO https://github.com/julianhille/MuhammaraJS/releases/download/{muhammara-version}/node-v{ABI}-linux-x64-glibc.tar.gz
    ```
-   e.g. for muhammara 5.3.0 on Node 22: `.../download/5.3.0/node-v127-linux-x64-glibc.tar.gz`
+   e.g. for muhammara 6.0.5 on Node 22: `.../download/6.0.5/node-v127-linux-x64-glibc.tar.gz`
 3. Extract the binary and zip it up:
    ```
    tar xzf node-v{ABI}-linux-x64-glibc.tar.gz   # extracts binding/muhammara.node
@@ -29,7 +29,7 @@ Steps:
    docker run --rm --platform linux/amd64 --entrypoint bash \
      -v "$PWD":/pkg public.ecr.aws/lambda/nodejs:22 -c '
        cd /tmp && npm init -y >/dev/null &&
-       npm install muhammara@5.3.0 /pkg &&
+       npm install muhammara@6.0.5 /pkg &&
        cp node_modules/lambda-muhammara/binding/muhammara.node node_modules/muhammara/binding/muhammara.node &&
        node -e "const m = require(\"muhammara\"); const w = m.createWriter(\"/tmp/out.pdf\"); w.writePage(w.createPage(0,0,595,842)); w.end(); console.log(\"OK on\", process.version);"'
    ```

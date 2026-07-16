@@ -27,3 +27,5 @@ And then deploy your lambda function as you would normally.
 5.3.1 Updated for Muhamara 5.3.0 (AWS Lambda Node 20.19.X)
 
 5.3.2 Updated for Muhamara 5.3.0 (AWS Lambda Node 22.X)
+
+6.0.5 Updated for Muhamara 6.0.5 (AWS Lambda Node 22.X)
