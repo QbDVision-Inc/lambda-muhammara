@@ -33,31 +33,63 @@ Steps:
 
 ## Releasing
 
-Once main contains the new version, run:
+Once main contains the new version, releasing is a single command, which runs
+the script in `scripts/release.js`:
 
 ```
 npm run release
 ```
 
-Prerequisites: npm >= 12 (`npm install -g npm@12`), Docker running, an npm auth
-token with publish rights, and a GitHub token for the release step — set
-`GITHUB_TOKEN` (or `GH_TOKEN`), or be logged into the `gh` CLI if you have it.
-Without a token the script still publishes and tags, and prints the URL to
-create the GitHub release manually.
+To test the process first without publishing, tagging, or creating a release,
+do a dry run (note the `--` — it's how npm passes flags through to the script):
 
-The script automates the rest of the process:
-1. Verifies you're on a clean, up-to-date main
+```
+npm run release -- --dryrun
+```
+
+Prerequisites:
+- npm >= 12 (`npm install -g npm@12`)
+- Docker running (or pass `-- --skip-verify` to skip the sanity check)
+- An npm auth token with publish rights
+- A GitHub token for the release step — set `GITHUB_TOKEN` (or `GH_TOKEN`), or
+  be logged into the `gh` CLI if you have it. Without a token the script still
+  publishes and tags, and prints the URL to create the GitHub release manually.
+
+## How it works
+
+The script automates the steps that used to be manual:
+
+1. Verifies you're on a clean, up-to-date main (a dry run only warns, so you
+   can test from a branch or with uncommitted changes)
 2. Verifies the version in package.json isn't already on npm
 3. Runs `npm ci` (unzips `binding/muhammara.node` via the `prepare` script)
 4. Sanity checks the binary inside the `public.ecr.aws/lambda/nodejs:22` image
    (loads muhammara and writes a PDF)
-5. Runs `npm publish`
+5. Runs `npm publish` (`npm publish --dry-run` in a dry run, which stops here)
 6. Tags the release (e.g. `6.0.5`) and pushes the tag
-7. Creates the GitHub release via the GitHub API (or prints the URL to do it manually)
+7. Creates the GitHub release via the GitHub API
 
-Flags: `npm run release -- --dry-run` runs all checks and a `publish --dry-run`
-without tagging or publishing; `-- --skip-verify` skips the Docker check.
-(Note the `--` — it's how npm passes flags through to the script.)
+## How to release manually
+
+If the release script doesn't work for whatever reason, these are the same
+steps by hand:
+
+1. Sanity check the binary loads on the target runtime using the AWS Lambda
+   base image:
+   ```
+   docker run --rm --platform linux/amd64 --entrypoint bash \
+     -v "$PWD":/pkg public.ecr.aws/lambda/nodejs:22 -c '
+       cd /tmp && npm init -y >/dev/null &&
+       npm install muhammara@6.0.5 /pkg &&
+       cp node_modules/lambda-muhammara/binding/muhammara.node node_modules/muhammara/binding/muhammara.node &&
+       node -e "const m = require(\"muhammara\"); const w = m.createWriter(\"/tmp/out.pdf\"); w.writePage(w.createPage(0,0,595,842)); w.end(); console.log(\"OK on\", process.version);"'
+   ```
+2. Publish it
+   1. `npm publish`
+3. Tag the release and push the tag
+   1. `git tag 6.0.5`
+   2. `git push origin 6.0.5`
+4. Create [a new release on GitHub](https://github.com/QbDVision-Inc/lambda-muhammara/releases/new)
 
 ## Fallback: building manually on EC2
 
