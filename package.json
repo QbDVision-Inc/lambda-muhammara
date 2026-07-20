@@ -4,7 +4,7 @@
   "description": "Muhammara 6.0.5 binaries that can be used in Lambda, built for the Node 22.x (nodejs22.x) runtime on 64-bit (x86) architecture.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/QbDVision-Inc/lambda-muhammara.git"
+    "url": "git+https://github.com/QbDVision-Inc/lambda-muhammara.git"
   },
   "main": "install.js",
   "files": [
@@ -13,7 +13,8 @@
     "binding/muhammara.node.zip"
   ],
   "scripts": {
-    "prepare": "node install.js"
+    "prepare": "node install.js",
+    "release": "node scripts/release.js"
   },
   "keywords": [
     "lambda-muhammara",
